@@ -44,6 +44,15 @@ src-tauri/vendor/    Patched vendored libheif-sys dependency
 docs/                Image pipeline and native dependency notes
 ```
 
+## Developer Documentation
+
+- [Developer overview](docs/developer-overview.md)
+- [Frontend architecture](docs/frontend-architecture.md)
+- [Backend architecture](docs/backend-architecture.md)
+- [Developer workflows](docs/developer-workflows.md)
+- [Image pipeline](docs/image-pipeline.md)
+- [Native dependencies](docs/native-dependencies.md)
+
 ## Prerequisites
 
 - Windows 10/11
