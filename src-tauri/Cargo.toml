@@ -1,0 +1,44 @@
+[package]
+name = "typeshift"
+version = "0.1.0"
+description = "TypeShift local file converter"
+authors = ["TypeShift"]
+license = "UNLICENSED"
+repository = ""
+edition = "2021"
+
+[features]
+default = []
+native-heif = ["dep:libheif-rs"]
+
+[lib]
+name = "typeshift_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+base64 = "0.22"
+image = { version = "0.25", default-features = false, features = ["bmp", "gif", "ico", "jpeg", "png", "tiff", "webp"] }
+img-parts = "0.4"
+libheif-rs = { version = "2.7.0", optional = true, default-features = false, features = ["latest", "embedded-libheif"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+ultrajpeg = "0.5.0-rc8"
+uuid = { version = "1", features = ["v4", "serde"] }
+windows = { version = "0.61", features = [
+  "Win32_Foundation",
+  "Win32_Graphics_Imaging",
+  "Win32_Storage_FileSystem",
+  "Win32_System_Com",
+  "Win32_System_Com_StructuredStorage"
+] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[patch.crates-io]
+libheif-sys = { path = "vendor/libheif-sys" }
