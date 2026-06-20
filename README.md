@@ -1,10 +1,20 @@
 # TypeShift
 
-TypeShift is a Windows-first local image converter built with Tauri, React,
-TypeScript, and Rust. The current app focuses on image conversion with careful
-handling for HEIC/HEIF sources, metadata policy, and HDR/gain-map output.
+TypeShift is a Windows-first local media converter built with Tauri, React,
+TypeScript, and Rust. The current working module focuses on image conversion
+with careful handling for HEIC/HEIF sources, metadata policy, and HDR/gain-map
+output. Video and audio workspaces are reserved in the UI for future converter
+modules.
 
-![TypeShift image converter UI](docs/assets/typeshift-image-converter.png)
+## Screenshots
+
+### Image Workspace
+
+![TypeShift empty image workspace](ss/1.png)
+
+### HEIC Conversion Result
+
+![TypeShift HEIC conversion result](docs/assets/typeshift-image-converter.png)
 
 ## Current Features
 
