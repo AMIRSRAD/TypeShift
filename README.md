@@ -14,7 +14,7 @@ modules.
 
 ### HEIC Conversion Result
 
-![TypeShift HEIC conversion result](docs/assets/typeshift-image-converter.png)
+<img width="1179" height="755" alt="2" src="https://github.com/user-attachments/assets/920f7dbb-c049-4a49-9a49-c64a66c92ad6" />
 
 ## Current Features
 
