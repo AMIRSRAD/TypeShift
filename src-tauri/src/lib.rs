@@ -1,16 +1,16 @@
-mod image_engine;
-mod heif_auxiliary;
 mod hdr_backend;
 mod hdr_jpeg_writer;
+mod heif_auxiliary;
+mod image_engine;
 mod metadata_writer;
 mod native_heif_hdr;
 
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine as _};
-use image_engine::{
-    convert_image, create_preview_image, inspect_image, ConvertRequest, ConversionJob, ConversionJobStatus,
-    ImageInspection, JobStatus,
-};
 use hdr_backend::HdrBackendStatus;
+use image_engine::{
+    convert_image, create_preview_image, inspect_image, ConversionJob, ConversionJobStatus,
+    ConvertRequest, ImageInspection, JobStatus,
+};
 use metadata_writer::MetadataToolStatus;
 use std::{
     collections::{HashMap, HashSet},
@@ -38,13 +38,23 @@ fn inspect_images(paths: Vec<String>) -> Result<Vec<ImageInspection>, String> {
 #[tauri::command]
 fn preview_image(path: String) -> Result<String, String> {
     let preview_path = create_preview_image(Path::new(&path)).map_err(|error| error.to_string())?;
-    let bytes = fs::read(&preview_path)
-        .map_err(|error| format!("Could not read preview image {}: {error}", preview_path.display()))?;
-    Ok(format!("data:image/png;base64,{}", BASE64_STANDARD.encode(bytes)))
+    let bytes = fs::read(&preview_path).map_err(|error| {
+        format!(
+            "Could not read preview image {}: {error}",
+            preview_path.display()
+        )
+    })?;
+    Ok(format!(
+        "data:image/png;base64,{}",
+        BASE64_STANDARD.encode(bytes)
+    ))
 }
 
 #[tauri::command]
-fn convert_images(request: ConvertRequest, state: State<'_, AppState>) -> Result<ConversionJob, String> {
+fn convert_images(
+    request: ConvertRequest,
+    state: State<'_, AppState>,
+) -> Result<ConversionJob, String> {
     let job_id = Uuid::new_v4().to_string();
     let total = request.input_paths.len();
     let mut job = ConversionJob {
@@ -56,7 +66,10 @@ fn convert_images(request: ConvertRequest, state: State<'_, AppState>) -> Result
     };
 
     {
-        let mut jobs = state.jobs.lock().map_err(|_| "Job state is unavailable".to_string())?;
+        let mut jobs = state
+            .jobs
+            .lock()
+            .map_err(|_| "Job state is unavailable".to_string())?;
         jobs.insert(job_id.clone(), job.clone());
     }
 
@@ -72,7 +85,10 @@ fn convert_images(request: ConvertRequest, state: State<'_, AppState>) -> Result
         }
         job.results.push(result);
 
-        let mut jobs = state.jobs.lock().map_err(|_| "Job state is unavailable".to_string())?;
+        let mut jobs = state
+            .jobs
+            .lock()
+            .map_err(|_| "Job state is unavailable".to_string())?;
         jobs.insert(job_id.clone(), job.clone());
     }
 
@@ -84,14 +100,23 @@ fn convert_images(request: ConvertRequest, state: State<'_, AppState>) -> Result
         };
     }
 
-    let mut jobs = state.jobs.lock().map_err(|_| "Job state is unavailable".to_string())?;
+    let mut jobs = state
+        .jobs
+        .lock()
+        .map_err(|_| "Job state is unavailable".to_string())?;
     jobs.insert(job_id, job.clone());
     Ok(job)
 }
 
 #[tauri::command]
-fn get_job_status(job_id: String, state: State<'_, AppState>) -> Result<ConversionJobStatus, String> {
-    let jobs = state.jobs.lock().map_err(|_| "Job state is unavailable".to_string())?;
+fn get_job_status(
+    job_id: String,
+    state: State<'_, AppState>,
+) -> Result<ConversionJobStatus, String> {
+    let jobs = state
+        .jobs
+        .lock()
+        .map_err(|_| "Job state is unavailable".to_string())?;
     jobs.get(&job_id)
         .cloned()
         .ok_or_else(|| format!("Unknown conversion job: {job_id}"))
@@ -152,6 +177,7 @@ fn is_cancelled(state: &State<'_, AppState>, job_id: &str) -> Result<bool, Strin
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![
             inspect_images,

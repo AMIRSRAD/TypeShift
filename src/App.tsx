@@ -1,4 +1,5 @@
 import { open } from "@tauri-apps/plugin-dialog";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -315,6 +316,14 @@ export default function App() {
       setAppError(error instanceof Error ? error.message : String(error));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function openCreatorWebsite() {
+    try {
+      await openUrl("https://amirsrad.ir");
+    } catch (error) {
+      setAppError(error instanceof Error ? error.message : String(error));
     }
   }
 
@@ -764,7 +773,12 @@ export default function App() {
             </div>
             <div className="about-grid">
               <Info label="Creator" value="Amirsalar Saberi rad" />
-              <Info label="Website" value="amirsrad.ir" />
+              <div className="info-cell">
+                <span>Website</span>
+                <button className="website-value" type="button" onClick={openCreatorWebsite}>
+                  amirsrad.ir
+                </button>
+              </div>
               <Info label="License" value="Proprietary - all rights reserved" />
             </div>
             <p>
@@ -774,6 +788,9 @@ export default function App() {
             <p>
               Third-party dependencies and bundled libraries remain under their own respective licenses.
             </p>
+            <button className="about-link" type="button" onClick={openCreatorWebsite}>
+              Visit amirsrad.ir
+            </button>
           </section>
         </div>
       )}
