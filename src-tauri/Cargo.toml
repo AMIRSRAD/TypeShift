@@ -2,9 +2,9 @@
 name = "typeshift"
 version = "0.1.0"
 description = "TypeShift local file converter"
-authors = ["TypeShift"]
+authors = ["Amirsalar Saberi rad"]
 license = "UNLICENSED"
-repository = ""
+repository = "https://github.com/AMIRSRAD/TypeShift"
 edition = "2021"
 
 [features]

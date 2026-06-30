@@ -152,6 +152,7 @@ export default function App() {
   const [startupLoading, setStartupLoading] = useState(true);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const selectedInspection = useMemo(
     () => inspections.find((item) => item.path === selectedPath) ?? inspections[0] ?? null,
@@ -366,6 +367,10 @@ export default function App() {
               <span>Starting</span>
             </div>
           )}
+          <button className="secondary-button compact" type="button" onClick={() => setAboutOpen(true)}>
+            <InfoIcon size={18} />
+            Info
+          </button>
           <button className="secondary-button" type="button" onClick={chooseFiles} disabled={!canUseImageConverter}>
             <ImagePlus size={18} />
             {activeMedia === "image" ? "Add images" : activeMedia === "video" ? "Add videos" : "Add audio"}
@@ -737,6 +742,40 @@ export default function App() {
             </button>
           </footer>
         </>
+      )}
+
+      {aboutOpen && (
+        <div className="modal-backdrop" role="presentation" onClick={() => setAboutOpen(false)}>
+          <section
+            className="about-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="about-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="about-header">
+              <div>
+                <span>About this app</span>
+                <h2 id="about-title">TypeShift</h2>
+              </div>
+              <button className="icon-button" type="button" title="Close" onClick={() => setAboutOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+            <div className="about-grid">
+              <Info label="Creator" value="Amirsalar Saberi rad" />
+              <Info label="Website" value="amirsrad.ir" />
+              <Info label="License" value="Proprietary - all rights reserved" />
+            </div>
+            <p>
+              TypeShift application code, branding, UI design, and original project assets are owned by
+              Amirsalar Saberi rad.
+            </p>
+            <p>
+              Third-party dependencies and bundled libraries remain under their own respective licenses.
+            </p>
+          </section>
+        </div>
       )}
     </main>
   );

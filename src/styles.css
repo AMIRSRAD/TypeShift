@@ -990,6 +990,10 @@ button:disabled {
   padding: 0 14px;
 }
 
+.secondary-button.compact {
+  padding: 0 12px;
+}
+
 .advanced-button {
   padding: 0 12px;
 }
@@ -1023,6 +1027,65 @@ button:disabled {
 .advanced-warning svg {
   flex: 0 0 auto;
   margin-top: 1px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(4, 7, 11, 0.64);
+  backdrop-filter: blur(10px);
+}
+
+.about-modal {
+  width: min(560px, 100%);
+  max-height: min(620px, calc(100vh - 48px));
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: #15191f;
+  box-shadow: var(--shadow);
+}
+
+.about-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.about-header span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.about-header h2 {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.about-modal p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 ::-webkit-scrollbar {
@@ -1064,6 +1127,10 @@ button:disabled {
     justify-content: stretch;
   }
 
+  .topbar-actions .secondary-button {
+    flex: 1 1 0;
+  }
+
   .media-tabs {
     width: 100%;
     min-width: 0;
@@ -1100,5 +1167,9 @@ button:disabled {
 
   .action-bar {
     min-height: 76px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
   }
 }

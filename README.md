@@ -63,6 +63,13 @@ docs/                Image pipeline and native dependency notes
 - [Image pipeline](docs/image-pipeline.md)
 - [Native dependencies](docs/native-dependencies.md)
 
+## Project Info
+
+- Creator: Amirsalar Saberi rad
+- Website: [amirsrad.ir](https://amirsrad.ir)
+- Ownership: TypeShift application code, branding, UI design, and original
+  project assets are owned by Amirsalar Saberi rad.
+
 ## Prerequisites
 
 - Windows 10/11
@@ -141,4 +148,12 @@ dedicated fixture folder when the test suite is ready for them.
 
 ## License
 
-This project is currently marked `UNLICENSED` in `src-tauri/Cargo.toml`.
+Copyright (c) Amirsalar Saberi rad. All rights reserved.
+
+TypeShift is proprietary software. No permission is granted to copy, modify,
+redistribute, sublicense, or use the TypeShift application code, branding, UI
+design, or original project assets without explicit written permission from
+Amirsalar Saberi rad.
+
+Third-party dependencies and vendored libraries remain under their respective
+licenses.
