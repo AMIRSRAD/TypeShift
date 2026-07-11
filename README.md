@@ -14,7 +14,7 @@ modules.
 
 ### HEIC Conversion Result
 
-<img width="1179" height="755" alt="2" src="https://github.com/user-attachments/assets/920f7dbb-c049-4a49-9a49-c64a66c92ad6" />
+![TypeShift HEIC conversion result](ss/2.png)
 
 ## Current Features
 
@@ -31,6 +31,10 @@ modules.
 - Safe metadata mode strips GPS/location metadata after copy.
 - HDR JPEG mode uses the native HEIC primary/gain-map path and refuses SDR
   fallback for that target.
+- Image, Video, and Audio top-level tabs are present; Image is implemented,
+  while Video and Audio are reserved for future modules.
+- In-app Info panel shows creator, ownership, license status, and opens
+  [amirsrad.ir](https://amirsrad.ir) in the system browser.
 
 ## Status
 
@@ -62,6 +66,7 @@ docs/                Image pipeline and native dependency notes
 - [Developer workflows](docs/developer-workflows.md)
 - [Image pipeline](docs/image-pipeline.md)
 - [Native dependencies](docs/native-dependencies.md)
+- [Windows libheif auxiliary backend](docs/windows-libheif-auxiliary-backend.md)
 
 ## Project Info
 
@@ -147,6 +152,8 @@ Do not commit personal photo samples. Add sanitized fixtures later under a
 dedicated fixture folder when the test suite is ready for them.
 
 ## License
+
+See [LICENSE](LICENSE).
 
 Copyright (c) Amirsalar Saberi rad. All rights reserved.
 

@@ -14,19 +14,23 @@ instead of depending on installed system codecs.
 
 ## Current Implementation Status
 
-The Tauri/Rust app now includes a Windows Imaging Component fallback for HEIC
-inspection and conversion. This path is local and can convert HEIC files when the
-required Microsoft HEIF/HEVC codecs are installed on Windows.
+The Tauri/Rust app now includes two HEIC-related paths:
+
+- a native `libheif` path, enabled by the `native-heif` feature, for HEIC
+  preview generation and HDR JPEG primary/gain-map conversion;
+- a Windows Imaging Component fallback for HEIC inspection and normal PNG/JPEG
+  conversion when the required Microsoft HEIF/HEVC codecs are installed.
 
 JPEG metadata preservation is implemented in-process through the Rust native
 metadata writer. It copies standard EXIF/XMP/ICC payloads into JPEG outputs,
 normalizes orientation because pixels are already rendered, and strips readable
 GPS/location references for the safe metadata policy.
 
-This is not the final bundled backend. The app labels WIC output with warnings
-because codec availability and color behavior can vary by machine. The bundled
-`libheif` + LittleCMS backend remains the required path before claiming full
-professional HEIC fidelity.
+The native HDR path is still not a claim of complete iPhone parity. The app
+keeps WIC output labeled with warnings because codec availability and color
+behavior can vary by machine. A fully validated `libheif` + LittleCMS pipeline
+with fixture acceptance remains the requirement before claiming complete
+professional HEIC color fidelity.
 
 ## Packaging Requirements
 

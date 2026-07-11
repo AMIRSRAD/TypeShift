@@ -21,6 +21,7 @@ src/main.tsx     React bootstrap
 topbar
   brand
   Image / Video / Audio tabs
+  Info button
   add-files button
 
 workspace
@@ -36,6 +37,11 @@ action-bar
 The `Image` tab is the active implemented converter. `Video` and `Audio` render
 reserved placeholder workspaces.
 
+The `Info` button opens an in-app About panel. It lists the creator, website,
+license status, and ownership notice. Website actions call Tauri's opener
+plugin so the site opens in the system browser instead of replacing the app
+WebView.
+
 ## State Responsibilities
 
 `App.tsx` owns UI state:
@@ -47,7 +53,8 @@ reserved placeholder workspaces.
 - advanced panel state,
 - latest conversion job,
 - preview state,
-- backend readiness state.
+- backend readiness state,
+- About/Info panel state.
 
 The frontend does not parse source files. It asks Rust to inspect and convert
 files through Tauri commands.
@@ -65,6 +72,9 @@ revealOutput(path)
 ```
 
 This keeps command names and payload shapes in one place.
+
+External website opening is not an `invoke` command; it uses
+`@tauri-apps/plugin-opener` directly from the Info panel.
 
 ## Preview Handling
 

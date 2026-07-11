@@ -4,6 +4,12 @@ The backend is Rust code under `src-tauri/src/`. It exposes Tauri commands to
 the frontend and owns all filesystem, image decoding, conversion, metadata, and
 platform integration behavior.
 
+Tauri plugins are part of the desktop shell:
+
+- `tauri-plugin-dialog` for file selection.
+- `tauri-plugin-opener` for opening the creator website in the system browser
+  from the Info panel.
+
 ## Command Layer
 
 Commands are registered in `lib.rs`.
@@ -66,7 +72,10 @@ HEIC/HEIF handling is split across multiple modules:
 - `heif_auxiliary.rs`: HEIC item graph parser and sidecar extraction.
 
 The WIC path is useful but machine-dependent. The native path is the intended
-direction for professional conversion behavior.
+direction for professional conversion behavior. Current release builds with the
+`native-heif` feature use the native path for HEIC preview generation and HDR
+JPEG conversion, while normal HEIC PNG/JPEG conversion can still use WIC
+fallback behavior.
 
 ## HDR Backend
 

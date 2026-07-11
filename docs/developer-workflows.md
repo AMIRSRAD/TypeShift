@@ -81,6 +81,7 @@ Before pushing a UI or conversion change:
 - convert selected image,
 - verify result rows and technical details are visible,
 - switch Image, Video, and Audio tabs,
+- open the Info panel and verify `amirsrad.ir` opens in the system browser,
 - verify the app does not show fake controls for unfinished modules.
 
 For conversion changes:

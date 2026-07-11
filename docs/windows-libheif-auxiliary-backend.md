@@ -88,10 +88,10 @@ Responsibilities:
 - `extract_auxiliary_sidecars(source, output) -> Vec<AuxiliarySidecar>`
 - `convert_heic_to_jpeg_with_auxiliary(request) -> ConversionResult`
 
-The module should be feature-gated until native dependencies are available:
+The native HEIC pieces are feature-gated through the current project feature:
 
 ```text
-cargo build --features libheif-backend
+cargo build --features native-heif
 ```
 
 Windows dependency options:

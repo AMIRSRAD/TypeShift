@@ -131,8 +131,12 @@ The current app supports these common non-HEIC raster paths through the Rust
 GIF conversion currently decodes the first frame only. Animation preservation
 must be treated as a separate feature.
 
-HEIC/HEIF conversion currently uses the Windows WIC fallback and supports PNG or
-JPEG output in that fallback path.
+HEIC/HEIF support is split by target:
+
+- Preview generation uses the native `libheif` path in release builds compiled
+  with `native-heif`, with WIC as a fallback where available.
+- HDR JPEG uses the native HEIC primary/gain-map path and refuses SDR fallback.
+- Normal HEIC to PNG/JPEG can still use the Windows WIC fallback where needed.
 
 ## Portrait And Auxiliary Data
 
@@ -214,8 +218,9 @@ a PNG export cannot become a Live Photo simply by preserving metadata.
 
 The Windows v1 app is planned around a bundled native HEIC engine plus explicit
 ICC color management. The current Rust module exposes the command contracts and
-pipeline stages, and includes a Windows WIC fallback for immediate local HEIC
-conversion when Microsoft HEIF/HEVC codecs are installed.
+pipeline stages, includes a native HEIC preview/HDR path behind `native-heif`,
+and keeps a Windows WIC fallback for immediate local HEIC conversion when
+Microsoft HEIF/HEVC codecs are installed.
 
 The selected direction is:
 

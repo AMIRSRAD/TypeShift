@@ -60,6 +60,10 @@ docs/
   windows-libheif-auxiliary-backend.md
 ```
 
+The desktop shell also registers Tauri plugins for dialogs and system-browser
+opening. The Info panel uses `@tauri-apps/plugin-opener` to open
+`https://amirsrad.ir` outside the WebView.
+
 ## Frontend State Model
 
 The React app keeps image workflow state in `App.tsx`:
@@ -73,6 +77,7 @@ The React app keeps image workflow state in `App.tsx`:
 - `job`: latest conversion job and per-file results.
 - `metadataTool` and `hdrBackend`: backend readiness results.
 - `previewSrc` and `previewError`: rendered preview state.
+- `aboutOpen`: ownership/license Info panel state.
 
 `src/tauri.ts` is the only frontend file that should call `invoke` directly.
 New commands should get a typed wrapper there before UI code uses them.
@@ -90,6 +95,9 @@ Commands are registered in `src-tauri/src/lib.rs`:
 - `get_metadata_tool_status()`
 - `get_hdr_backend_status()`
 
+The website opener is intentionally handled through Tauri's opener plugin
+rather than a normal in-WebView navigation link.
+
 The command layer should stay thin. Business logic belongs in the Rust modules
 under `src-tauri/src/`, especially `image_engine.rs` for image conversion
 orchestration.
@@ -106,8 +114,9 @@ orchestration.
 - Runs metadata copying after JPEG/HDR JPEG output is written.
 
 Normal raster inputs use the Rust `image` crate. HEIC/HEIF currently uses a mix
-of Windows WIC fallback behavior and native `libheif` feature paths depending on
-the operation.
+of Windows WIC fallback behavior and native `libheif` feature paths. In release
+builds with `native-heif`, previews and HDR JPEG use the native path; normal
+HEIC to PNG/JPEG can still use WIC fallback behavior where needed.
 
 ## Metadata Handling
 
