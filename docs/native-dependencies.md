@@ -32,6 +32,19 @@ behavior can vary by machine. A fully validated `libheif` + LittleCMS pipeline
 with fixture acceptance remains the requirement before claiming complete
 professional HEIC color fidelity.
 
+## Bundled FFmpeg for Video Conversion
+
+Video conversion and preview rely on FFmpeg/FFprobe. The executable discovery
+checks an `ffmpeg/` folder next to the app, binaries directly beside the app,
+and PATH. For development it also checks `src-tauri/bin/ffmpeg/`.
+
+- Standalone distributions must include `ffmpeg.exe` and `ffprobe.exe` in the
+  `ffmpeg/` folder or require FFmpeg on PATH. The binaries are not tracked in
+  Git because each is larger than GitHub's ordinary file size limit.
+- The static BtbN GPL build includes the encoders the app requires
+  (`libx264`, `libvpx-vp9`, `libopus`, `aac`); the backend scans for them and
+  reports a degraded status if they are missing.
+
 ## Packaging Requirements
 
 Before enabling native HEIC conversion:

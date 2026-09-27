@@ -100,7 +100,10 @@ pub fn write_heic_preview_png(input_path: &Path, output_path: &Path) -> Result<(
 }
 
 #[cfg(not(feature = "native-heif"))]
-pub fn write_heic_preview_png(_input_path: &Path, _output_path: &Path) -> Result<(), String> {
+pub fn write_heic_preview_png(
+    _input_path: &std::path::Path,
+    _output_path: &std::path::Path,
+) -> Result<(), String> {
     Err("Native libheif preview backend is not linked in this build.".to_string())
 }
 

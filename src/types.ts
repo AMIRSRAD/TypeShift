@@ -85,3 +85,59 @@ export interface ConversionJob {
 }
 
 export type ConversionJobStatus = ConversionJob;
+
+export type VideoOutputFormat = "mp4" | "webm" | "mkv" | "gif";
+export type VideoQuality = "high" | "medium" | "low";
+export type VideoScalePolicy = "original" | "height_1080" | "height_720" | "height_480";
+
+export interface VideoInspection {
+  path: string;
+  fileName: string;
+  format: string;
+  container: string | null;
+  durationSeconds: number | null;
+  width: number | null;
+  height: number | null;
+  videoCodec: string | null;
+  audioCodec: string | null;
+  fps: number | null;
+  hasAudio: boolean;
+  warnings: string[];
+}
+
+export interface ConvertVideoRequest {
+  inputPaths: string[];
+  outputFormat: VideoOutputFormat;
+  quality: VideoQuality;
+  scale: VideoScalePolicy;
+  destinationPolicy: DestinationPolicy;
+  conflictPolicy: ConflictPolicy;
+}
+
+export interface VideoConversionResult {
+  inputPath: string;
+  outputPath: string | null;
+  status: ResultStatus;
+  warnings: string[];
+  errorMessage: string | null;
+}
+
+export interface VideoConversionJob {
+  jobId: string;
+  status: JobStatus;
+  total: number;
+  completed: number;
+  results: VideoConversionResult[];
+}
+
+export interface VideoBackendStatus {
+  available: boolean;
+  ffmpegPath: string | null;
+  ffprobePath: string | null;
+  libx264Available: boolean;
+  libvpxVp9Available: boolean;
+  libopusAvailable: boolean;
+  aacAvailable: boolean;
+  detail: string;
+  nextAction: string;
+}

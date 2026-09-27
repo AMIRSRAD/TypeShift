@@ -3,9 +3,13 @@ import type {
   ConversionJob,
   ConversionJobStatus,
   ConvertRequest,
+  ConvertVideoRequest,
   HdrBackendStatus,
   ImageInspection,
   MetadataToolStatus,
+  VideoBackendStatus,
+  VideoConversionJob,
+  VideoInspection,
 } from "./types";
 
 export function inspectImages(paths: string[]): Promise<ImageInspection[]> {
@@ -38,4 +42,20 @@ export function getMetadataToolStatus(): Promise<MetadataToolStatus> {
 
 export function getHdrBackendStatus(): Promise<HdrBackendStatus> {
   return invoke<HdrBackendStatus>("get_hdr_backend_status");
+}
+
+export function inspectVideos(paths: string[]): Promise<VideoInspection[]> {
+  return invoke<VideoInspection[]>("inspect_videos", { paths });
+}
+
+export function previewVideoFrame(path: string): Promise<string> {
+  return invoke<string>("preview_video_frame", { path });
+}
+
+export function convertVideos(request: ConvertVideoRequest): Promise<VideoConversionJob> {
+  return invoke<VideoConversionJob>("convert_videos", { request });
+}
+
+export function getVideoBackendStatus(): Promise<VideoBackendStatus> {
+  return invoke<VideoBackendStatus>("get_video_backend_status");
 }

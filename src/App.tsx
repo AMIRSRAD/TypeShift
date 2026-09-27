@@ -17,8 +17,10 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { convertImages, getHdrBackendStatus, getMetadataToolStatus, inspectImages, previewImage, revealOutput } from "./tauri";
+import VideoWorkspace from "./VideoWorkspace";
+import type { VideoWorkspaceHandle } from "./VideoWorkspace";
 import type {
   ConversionJob,
   ConvertRequest,
@@ -154,6 +156,7 @@ export default function App() {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const videoWorkspaceRef = useRef<VideoWorkspaceHandle>(null);
 
   const selectedInspection = useMemo(
     () => inspections.find((item) => item.path === selectedPath) ?? inspections[0] ?? null,
@@ -334,7 +337,13 @@ export default function App() {
   const metadataMissing = metadataTool && !metadataTool.available && metadataRelevant;
   const hdrMissing = hdrBackend && !hdrBackend.available && outputFormat === "adaptive_hdr_jpeg";
   const conversionCount = conversionScope === "all" ? paths.length : selectedInspection ? 1 : 0;
-  const canUseImageConverter = activeMedia === "image";
+  function handleAddFiles() {
+    if (activeMedia === "image") {
+      void chooseFiles();
+    } else if (activeMedia === "video") {
+      videoWorkspaceRef.current?.addFiles();
+    }
+  }
 
   return (
     <main className="app-shell">
@@ -380,7 +389,7 @@ export default function App() {
             <InfoIcon size={18} />
             Info
           </button>
-          <button className="secondary-button" type="button" onClick={chooseFiles} disabled={!canUseImageConverter}>
+          <button className="secondary-button" type="button" onClick={handleAddFiles} disabled={activeMedia === "audio"}>
             <ImagePlus size={18} />
             {activeMedia === "image" ? "Add images" : activeMedia === "video" ? "Add videos" : "Add audio"}
           </button>
@@ -737,13 +746,15 @@ export default function App() {
         </button>
       </footer>
         </>
+      ) : activeMedia === "video" ? (
+        <VideoWorkspace ref={videoWorkspaceRef} />
       ) : (
         <>
           <MediaPlaceholder mode={activeMedia} />
           <footer className="action-bar">
             <div className="footer-status">
               <strong>0 queued</strong>
-              <span>{activeMedia === "video" ? "Video conversion workspace is reserved" : "Audio conversion workspace is reserved"}</span>
+              <span>Audio conversion workspace is reserved</span>
             </div>
             <button className="primary-button" type="button" disabled>
               <Play size={18} />

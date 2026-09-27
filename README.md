@@ -35,6 +35,9 @@ modules.
   while Video and Audio are reserved for future modules.
 - In-app Info panel shows creator, ownership, license status, and opens
   [amirsrad.ir](https://amirsrad.ir) in the system browser.
+- Video and audio conversion use FFmpeg/FFprobe. The backend discovers tools
+  beside the executable or on PATH; local development can use
+  `src-tauri/bin/ffmpeg/`.
 
 ## Status
 
@@ -136,6 +139,11 @@ The executable is written to:
 ```text
 src-tauri/target/release/typeshift.exe
 ```
+
+For standalone video/audio builds, provide compatible `ffmpeg.exe` and
+`ffprobe.exe` in an `ffmpeg/` folder next to the executable, or ensure FFmpeg
+is available on PATH. The large FFmpeg executables are not stored in this Git
+repository.
 
 ## Git Notes
 

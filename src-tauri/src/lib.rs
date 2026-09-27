@@ -4,6 +4,7 @@ mod heif_auxiliary;
 mod image_engine;
 mod metadata_writer;
 mod native_heif_hdr;
+mod video_engine;
 
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine as _};
 use hdr_backend::HdrBackendStatus;
@@ -12,6 +13,11 @@ use image_engine::{
     ConvertRequest, ImageInspection, JobStatus,
 };
 use metadata_writer::MetadataToolStatus;
+use video_engine::{
+    convert_video, create_video_preview_frame, inspect_video, safe_output_path,
+    ConvertVideoRequest, VideoBackendStatus, VideoConversionJob, VideoConversionResult,
+    VideoInspection, VideoJobStatus, VideoResultStatus,
+};
 use std::{
     collections::{HashMap, HashSet},
     fs,
@@ -166,6 +172,94 @@ fn get_hdr_backend_status() -> HdrBackendStatus {
     hdr_backend::inspect_hdr_backend()
 }
 
+#[tauri::command]
+fn inspect_videos(paths: Vec<String>) -> Vec<VideoInspection> {
+    paths
+        .iter()
+        .map(|path| inspect_video(Path::new(path)))
+        .collect()
+}
+
+#[tauri::command]
+fn preview_video_frame(path: String) -> Result<String, String> {
+    let preview_path = create_video_preview_frame(Path::new(&path))?;
+    let bytes = fs::read(&preview_path).map_err(|error| {
+        format!(
+            "Could not read video preview frame {}: {error}",
+            preview_path.display()
+        )
+    })?;
+    Ok(format!(
+        "data:image/png;base64,{}",
+        BASE64_STANDARD.encode(bytes)
+    ))
+}
+
+#[tauri::command]
+async fn convert_videos(
+    request: ConvertVideoRequest,
+    state: State<'_, AppState>,
+) -> Result<VideoConversionJob, String> {
+    let job_id = Uuid::new_v4().to_string();
+    let total = request.input_paths.len();
+    let mut job = VideoConversionJob {
+        job_id: job_id.clone(),
+        status: VideoJobStatus::Running,
+        total,
+        completed: 0,
+        results: Vec::with_capacity(total),
+    };
+
+    for input_path in &request.input_paths {
+        if is_cancelled(&state, &job_id)? {
+            job.status = VideoJobStatus::Cancelled;
+            break;
+        }
+
+        let output_path = safe_output_path(Path::new(input_path), &request.output_format);
+        let input_path = input_path.clone();
+        let worker_input_path = input_path.clone();
+        let output_path_for_worker = output_path.clone();
+        let request = request.clone();
+        let result = tauri::async_runtime::spawn_blocking(move || {
+            convert_video(Path::new(&worker_input_path), &output_path_for_worker, &request)
+        })
+        .await
+        .map_err(|error| format!("Video conversion worker failed: {error}"))?;
+
+        let (status, warnings, error_message) = match result {
+            Ok(warnings) => (VideoResultStatus::Completed, warnings, None),
+            Err(error) => (VideoResultStatus::Failed, Vec::new(), Some(error)),
+        };
+
+        if status.is_terminal_success() {
+            job.completed += 1;
+        }
+        job.results.push(VideoConversionResult {
+            input_path,
+            output_path: Some(output_path.to_string_lossy().to_string()),
+            status,
+            warnings,
+            error_message,
+        });
+    }
+
+    if job.status != VideoJobStatus::Cancelled {
+        job.status = if job.results.iter().any(|result| result.status.is_failure()) {
+            VideoJobStatus::Failed
+        } else {
+            VideoJobStatus::Completed
+        };
+    }
+
+    Ok(job)
+}
+
+#[tauri::command]
+fn get_video_backend_status() -> VideoBackendStatus {
+    video_engine::inspect_video_backend()
+}
+
 fn is_cancelled(state: &State<'_, AppState>, job_id: &str) -> Result<bool, String> {
     let cancellations = state
         .cancellations
@@ -187,7 +281,11 @@ pub fn run() {
             cancel_job,
             reveal_output,
             get_metadata_tool_status,
-            get_hdr_backend_status
+            get_hdr_backend_status,
+            inspect_videos,
+            preview_video_frame,
+            convert_videos,
+            get_video_backend_status
         ])
         .run(tauri::generate_context!())
         .expect("error while running TypeShift");
