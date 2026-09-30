@@ -14,6 +14,20 @@ instead of depending on installed system codecs.
 
 ## Current Implementation Status
 
+On Windows, native HEIC builds need CMake/Ninja and a vcpkg installation with
+the project dependencies available through `CMAKE_PREFIX_PATH`. Point these
+variables at your local toolchain before building with `--features native-heif`:
+
+```powershell
+$env:VCPKG_ROOT = 'C:\path\to\vcpkg'
+$env:CMAKE_GENERATOR = 'Ninja'
+$env:CMAKE_PREFIX_PATH = Join-Path $env:VCPKG_ROOT 'installed\x64-windows-static-md'
+$env:PKG_CONFIG = 'C:\path\to\pkg-config.exe'
+```
+
+The paths are machine-specific and must not be committed to project
+documentation.
+
 The Tauri/Rust app now includes two HEIC-related paths:
 
 - a native `libheif` path, enabled by the `native-heif` feature, for HEIC
@@ -41,9 +55,11 @@ and PATH. For development it also checks `src-tauri/bin/ffmpeg/`.
 - Standalone distributions must include `ffmpeg.exe` and `ffprobe.exe` in the
   `ffmpeg/` folder or require FFmpeg on PATH. The binaries are not tracked in
   Git because each is larger than GitHub's ordinary file size limit.
-- The static BtbN GPL build includes the encoders the app requires
-  (`libx264`, `libvpx-vp9`, `libopus`, `aac`); the backend scans for them and
-  reports a degraded status if they are missing.
+- The static BtbN build used during development includes encoders the app
+  requires (`libx264`, `libvpx-vp9`, `libopus`, `aac`); the backend scans for
+  them and reports a degraded status if they are missing. Confirm the exact
+  build's license and redistribution requirements before shipping it with the
+  proprietary app, and include applicable notices.
 
 ## Packaging Requirements
 

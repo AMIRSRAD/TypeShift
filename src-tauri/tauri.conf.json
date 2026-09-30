@@ -26,12 +26,24 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["nsis", "msi"],
+    "shortDescription": "Local image and media converter",
+    "longDescription": "Convert images locally with metadata controls and HDR-aware HEIC support. Video and audio workspaces are available where their external tools are installed.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "startMenuFolder": "TypeShift"
+      }
+    }
   }
 }

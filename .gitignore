@@ -18,8 +18,9 @@ src-tauri/gen/
 *.dylib
 *.so
 
-# Bundled FFmpeg payload shipped next to the executable in installers
-!src-tauri/bin/ffmpeg/*.exe
+# Local tools and task metadata
+src-tauri/bin/ffmpeg/
+.freebuff/
 
 # TypeShift conversion output and local samples
 *.typeshift.*
@@ -28,6 +29,10 @@ src-tauri/gen/
 *.typeshift-hdr-*.*
 sample.HEIC
 sample.heic
+*.HEIC
+*.heic
+*.HEIF
+*.heif
 
 # Logs and diagnostics
 *.log

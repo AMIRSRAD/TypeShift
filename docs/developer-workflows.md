@@ -42,26 +42,23 @@ npm run build
 
 ```powershell
 cd src-tauri
-$env:VCPKG_ROOT='C:\vcpkg-master'
-$env:CMAKE_GENERATOR='Ninja'
-$env:CMAKE_PREFIX_PATH='C:\vcpkg-master\installed\x64-windows-static-md'
-$env:PKG_CONFIG='C:\vcpkg-master\downloads\tools\msys2\1e74ca60daa10104\mingw64\bin\pkg-config.exe'
 cargo test --features native-heif
 ```
 
+Configure the native dependency environment first as described in
+[`native-dependencies.md`](native-dependencies.md).
+
 Some local fixture tests are ignored by default because they require private
-sample photos. Do not commit personal HEIC samples.
+sample photos. The generated `docs/sample-data/quiet-coast.png` fixture is safe
+to commit; do not commit personal HEIC samples.
 
-## Build Release Exe
+## Build Windows Installers
 
-Do not build MSI installers during normal development.
+This creates the NSIS setup executable and MSI packages configured for Windows
+releases. For a faster local executable-only build, add `--no-bundle`.
 
 ```powershell
-$env:VCPKG_ROOT='C:\vcpkg-master'
-$env:CMAKE_GENERATOR='Ninja'
-$env:CMAKE_PREFIX_PATH='C:\vcpkg-master\installed\x64-windows-static-md'
-$env:PKG_CONFIG='C:\vcpkg-master\downloads\tools\msys2\1e74ca60daa10104\mingw64\bin\pkg-config.exe'
-npx tauri build --no-bundle --features native-heif
+npm run tauri -- build --features native-heif
 ```
 
 The executable is:
@@ -102,7 +99,9 @@ Ignored files include:
 - `src-tauri/target/`,
 - `src-tauri/gen/`,
 - local converted outputs,
-- local sample HEIC files.
+- local HEIC/HEIF photo samples,
+- local FFmpeg binaries,
+- `.freebuff/` task metadata.
 
 Use `git status --short --ignored` when checking that build artifacts and
 private samples are not staged.

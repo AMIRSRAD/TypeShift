@@ -3,8 +3,8 @@
 TypeShift is a Windows-first local media converter built with Tauri, React,
 TypeScript, and Rust. The current working module focuses on image conversion
 with careful handling for HEIC/HEIF sources, metadata policy, and HDR/gain-map
-output. Video and audio workspaces are reserved in the UI for future converter
-modules.
+output. The video workspace is implemented; the audio workspace is reserved
+for a future converter module.
 
 ## Screenshots
 
@@ -12,9 +12,13 @@ modules.
 
 ![TypeShift empty image workspace](ss/1.png)
 
-### HEIC Conversion Result
+### Sample Image in Queue
 
-![TypeShift HEIC conversion result](ss/2.png)
+![TypeShift image workspace with a generated sample image](ss/2.png)
+
+The repository includes a synthetic image for safe demos and manual checks:
+[quiet-coast.png](docs/sample-data/quiet-coast.png). It contains no personal
+photo or identifying metadata.
 
 ## Current Features
 
@@ -31,13 +35,12 @@ modules.
 - Safe metadata mode strips GPS/location metadata after copy.
 - HDR JPEG mode uses the native HEIC primary/gain-map path and refuses SDR
   fallback for that target.
-- Image, Video, and Audio top-level tabs are present; Image is implemented,
-  while Video and Audio are reserved for future modules.
+- Image and Video conversion workspaces are implemented. Audio is currently a
+  reserved workspace.
 - In-app Info panel shows creator, ownership, license status, and opens
   [amirsrad.ir](https://amirsrad.ir) in the system browser.
-- Video and audio conversion use FFmpeg/FFprobe. The backend discovers tools
-  beside the executable or on PATH; local development can use
-  `src-tauri/bin/ffmpeg/`.
+- Video conversion uses FFmpeg/FFprobe. The backend discovers tools beside the
+  executable or on PATH; local development can use `src-tauri/bin/ffmpeg/`.
 
 ## Status
 
@@ -59,6 +62,7 @@ src/                 React + TypeScript frontend
 src-tauri/src/       Rust Tauri commands and conversion engine
 src-tauri/vendor/    Patched vendored libheif-sys dependency
 docs/                Image pipeline and native dependency notes
+docs/sample-data/    Generated, metadata-free demo image
 ```
 
 ## Developer Documentation
@@ -78,6 +82,25 @@ docs/                Image pipeline and native dependency notes
 - Ownership: TypeShift application code, branding, UI design, and original
   project assets are owned by Amirsalar Saberi rad.
 
+## Windows installation
+
+Windows release builds produce an NSIS setup executable and an MSI installer.
+The NSIS setup installs for the current user and adds a shortcut under
+**Start Menu → TypeShift**. The app does not start automatically when Windows
+starts; add the shortcut to the Startup folder yourself if you want that.
+
+The installer uses Tauri's WebView2 bootstrapper mode. Windows 10/11 normally
+provides WebView2; a machine missing the runtime needs an internet connection
+during installation. Release installers are not code-signed yet. Windows can
+show an unknown-publisher or SmartScreen warning; configure trusted
+Authenticode signing before a public release.
+
+Video conversion requires compatible `ffmpeg.exe` and `ffprobe.exe`
+beside the installed app in an `ffmpeg/` folder, or FFmpeg available on PATH.
+Those binaries are not included in the public repository or default installer.
+Before redistributing FFmpeg, review the exact build's license and codec
+configuration and include the required notices.
+
 ## Prerequisites
 
 - Windows 10/11
@@ -85,11 +108,8 @@ docs/                Image pipeline and native dependency notes
 - Rust stable
 - Tauri v2 CLI through `npm`
 - Visual Studio Build Tools for Rust/Tauri native builds
-- Native dependency environment used by the current project:
-  - `VCPKG_ROOT=C:\vcpkg-master`
-  - `CMAKE_GENERATOR=Ninja`
-  - `CMAKE_PREFIX_PATH=C:\vcpkg-master\installed\x64-windows-static-md`
-  - `PKG_CONFIG=C:\vcpkg-master\downloads\tools\msys2\1e74ca60daa10104\mingw64\bin\pkg-config.exe`
+- For native HEIC/HDR builds: the native dependencies and environment described
+  in [Native dependencies](docs/native-dependencies.md)
 
 JPEG metadata copying is built into the Rust app. It preserves standard
 EXIF/XMP/ICC data for JPEG outputs, normalizes orientation after pixels are
@@ -120,30 +140,29 @@ cargo test --features native-heif
 
 ## Release Build
 
-Use Tauri for release builds so the frontend is embedded in the executable.
-Plain `cargo build --release` is not enough for this app because it can leave
-the executable pointing at the development server.
+Use Tauri for release builds so the frontend is embedded in the executable and
+the configured Windows installers are packaged. Plain `cargo build --release`
+is not enough because it can leave the executable pointing at the dev server.
 
-Build the release executable without MSI/installer output:
+Build the Windows installers:
+
+For native HEIC/HDR support, set up the local Windows build variables in
+[Native dependencies](docs/native-dependencies.md) first.
 
 ```powershell
-$env:VCPKG_ROOT='C:\vcpkg-master'
-$env:CMAKE_GENERATOR='Ninja'
-$env:CMAKE_PREFIX_PATH='C:\vcpkg-master\installed\x64-windows-static-md'
-$env:PKG_CONFIG='C:\vcpkg-master\downloads\tools\msys2\1e74ca60daa10104\mingw64\bin\pkg-config.exe'
-npx tauri build --no-bundle --features native-heif
+npm run tauri -- build --features native-heif
 ```
 
-The executable is written to:
+The Windows setup executable and MSI are written under:
 
 ```text
-src-tauri/target/release/typeshift.exe
+src-tauri/target/release/bundle/nsis/
+src-tauri/target/release/bundle/msi/
 ```
 
-For standalone video/audio builds, provide compatible `ffmpeg.exe` and
-`ffprobe.exe` in an `ffmpeg/` folder next to the executable, or ensure FFmpeg
-is available on PATH. The large FFmpeg executables are not stored in this Git
-repository.
+The standalone executable is at `src-tauri/target/release/typeshift.exe`.
+Use the NSIS `.exe` for a guided setup and the MSI for Windows Installer tools.
+Configure Authenticode signing before distributing a public release broadly.
 
 ## Git Notes
 
@@ -154,10 +173,13 @@ Generated output is ignored, including:
 - `src-tauri/target*/`
 - `src-tauri/gen/`
 - local converted outputs such as `*.typeshift.*`
-- local sample HEIC files
+- local HEIC/HEIF photo samples
+- local FFmpeg tools in `src-tauri/bin/ffmpeg/`
+- `.freebuff/` task metadata
 
-Do not commit personal photo samples. Add sanitized fixtures later under a
-dedicated fixture folder when the test suite is ready for them.
+The only committed sample image is the generated, metadata-free fixture under
+`docs/sample-data/`. Do not add personal photos or screenshots that expose
+private image content, names, or file paths.
 
 ## License
 

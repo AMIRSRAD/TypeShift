@@ -163,21 +163,16 @@ Rust checks:
 
 ```powershell
 cd src-tauri
-$env:VCPKG_ROOT='C:\vcpkg-master'
-$env:CMAKE_GENERATOR='Ninja'
-$env:CMAKE_PREFIX_PATH='C:\vcpkg-master\installed\x64-windows-static-md'
-$env:PKG_CONFIG='C:\vcpkg-master\downloads\tools\msys2\1e74ca60daa10104\mingw64\bin\pkg-config.exe'
 cargo test --features native-heif
 ```
 
-Release build without MSI:
+Configure the native dependency environment first as described in
+[`native-dependencies.md`](native-dependencies.md).
+
+Build the Windows setup executable and MSI:
 
 ```powershell
-$env:VCPKG_ROOT='C:\vcpkg-master'
-$env:CMAKE_GENERATOR='Ninja'
-$env:CMAKE_PREFIX_PATH='C:\vcpkg-master\installed\x64-windows-static-md'
-$env:PKG_CONFIG='C:\vcpkg-master\downloads\tools\msys2\1e74ca60daa10104\mingw64\bin\pkg-config.exe'
-npx tauri build --no-bundle --features native-heif
+npm run tauri -- build --features native-heif
 ```
 
 The release executable is written to:
